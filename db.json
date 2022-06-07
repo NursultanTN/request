@@ -1,0 +1,32 @@
+{
+  "todos": [
+    {
+      "todo": "sad",
+      "id": 1
+    },
+    {
+      "todo": "buy",
+      "id": 2
+    },
+    {
+      "todo": "milk",
+      "id": 3
+    },
+    {
+      "todo": "bread",
+      "id": 4
+    },
+    {
+      "todo": "eggs",
+      "id": 5
+    },
+    {
+      "todo": "food",
+      "id": 6
+    },
+    {
+      "todo": "help",
+      "id": 7
+    }
+  ]
+}
