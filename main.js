@@ -3,58 +3,71 @@ const API = "http://localhost:8000/todos";
 
 //! Create
 
-//? получаем нужные для добавления элементы
+// получаем нужные для добавления элементы
 let inpAdd = document.getElementById("inp-add");
 let btnAdd = document.getElementById("btn-add");
 // console.log(inpAdd, btnAdd);
 
-//? навесили событие на кнопку "сохранить"
+// навесили событие на кнопку "сохранить"
 btnAdd.addEventListener("click", async function () {
-  //? собираем объект для добавления в дб.жсон
+  // собираем объект для добавления в дб.жсон
   let newTodo = {
     todo: inpAdd.value,
   };
   // console.log(newTodo);
 
-  //? проверка на заполненность инпута и останавливаем код с помощью return, чтоб пост-запрос не выполнился
+  // проверка на заполненность инпута и останавливаем код с помощью return, чтоб пост-запрос не выполнился
   if (newTodo.todo.trim() === "") {
     alert("заполните поля!");
     return;
   }
-  //? запрос для добавления
+  // запрос для добавления
   await fetch(API, {
-    method: "POST", //? указываем метод
-    body: JSON.stringify(newTodo), //? указываем что именно нужно запросить
+    method: "POST", // указываем метод
+    body: JSON.stringify(newTodo), // указываем что именно нужно запросить
     headers: {
       "Content-type": "application/json; charset=utf-8",
-    }, //? кодировка
+    }, // кодировка
   });
-  //? очищаем инпут после добавления
+  // очищаем инпут после добавления
   inpAdd.value = "";
-  //? чтоб добавленный таск сразу отобразился в листе вызываем функцию, которая выполняет отображение
+  // чтоб добавленный таск сразу отобразился в листе вызываем функцию, которая выполняет отображение
   getTodos();
 });
 
 //! Read
-//? получаем элемент, чтоб в нем отобразить все таски
+// получаем элемент, чтоб в нем отобразить все таски
 let list = document.getElementById("list");
-//? проверяем в консоли, чтоб убедиться, что в переменной list  сейчас НЕ пусто
-console.log(list);
-//? функция для получения всех тасков и отбражения их в div#list
+// проверяем в консоли, чтоб убедиться, что в переменной list  сейчас НЕ пусто
+// console.log(list);
+// функция для получения всех тасков и отбражения их в div#list
 // async await нужен здесь, чтоб при отправке запроса мы сначала получили данные и только потом записали все в переменную response, иначе (если мы НЕ дождемся) туда запишется pending (состояние промиса, который еще не выполнен)
 async function getTodos() {
   let response = await fetch(API) // если не указать метод запроса, то по умолчанию это get запрос
     .then(res => res.json()) // переводим все в json формат
     .catch(err => console.log(err)); // отловили ошибку
-  console.log(response);
+  // console.log(response);
   // очищаем div#list, чтоб список тасков корректно отображался и не хранил там предыдущие html-элементы со старыми данными
   list.innerHTML = "";
   // перебираем полученный из дб.жсон массив и для каждого объекта из этого массива создаем div и задаем ему содержимое через метод innerHTML, каждый созданный элементаппендим  в div#list
   response.forEach(item => {
     let newElem = document.createElement("div");
-    newElem.innerHTML = `<span>${item.todo}</span>`;
+    newElem.id = item.id;
+    newElem.innerHTML = `<span>${item.todo}</span>
+    <button class="btn-delete">Delete</button>`;
     list.append(newElem);
   });
 }
 // вызываем функцию, чтоб как только откроется страница что-то было отображено
 getTodos();
+
+document.addEventListener("click", async function (e) {
+  if (e.target.className === "btn-delete") {
+    let id = e.target.parentNode.id;
+    await fetch(`${API}/${id}`, {
+      method: "DELETE",
+    });
+    getTodos();
+  }
+  // console.log(e.target.parentNode.id);
+});
